@@ -2,14 +2,21 @@ package main
 
 import (
 	"fmt"
+	"reflect"
+	"time"
 
 	exiftool "github.com/barasher/go-exiftool"
 )
 
 // Photo , structure to store pictures information
 type Photo struct {
-	photoPath string
-	metadata  exiftool.FileMetadata
+	photoPath    string
+	labels       []string
+	gps          string // TODO review this type
+	dateCreation time.Time
+	fileType     string
+	imageSize    string
+	metadata     exiftool.FileMetadata // Raw data extracted from the file
 }
 
 // NewPhoto , return Photo struct with nil for the metadata
@@ -42,20 +49,79 @@ func (p *Photo) LoadPhotoTags() error {
 	if p.metadata.Err != nil {
 		return p.metadata.Err
 	}
+
 	return nil
 
 }
 
-// GetPhotoTag , return the value for a tag or an empty string if the field do not exist
-func (p *Photo) GetPhotoTag(tagName string) interface{} {
+// SetPhotoStruct , get information from the raw data and set fields in the struct
+func (p *Photo) SetPhotoStruct() error {
 
-	if val, ok := p.metadata.Fields[tagName]; ok {
-		return val.(string)
-	}
-
-	return ""
+	var err error
+	// TODO change to use the multiple error mechanism
+	p.labels, err = p.extractPhotoLabel(p.metadata)
+	p.gps, err = p.extractGPSPosition(p.metadata)
+	p.dateCreation, err = p.extractDateCreation(p.metadata)
+	return err
 }
 
+// extractPhotoLabel , extract from metadata the keywords label , tags set by the user
+func (p *Photo) extractPhotoLabel(metadata exiftool.FileMetadata) ([]string, error) {
+
+	// metadata can store the information in multiple format
+	if val, ok := metadata.Fields["Keywords"]; ok {
+		v := reflect.ValueOf(val)
+		switch v.Kind() {
+		case reflect.String:
+			return []string{val.(string)}, nil
+		case reflect.Slice:
+			labels := make([]string, len(val.([]interface{})))
+			for i, v := range val.([]interface{}) {
+				labels[i] = fmt.Sprint(v)
+			}
+			return labels, nil
+		default:
+			return []string{""}, fmt.Errorf("Error type for field Keywords ,Found type:  %v", val)
+		}
+	}
+
+	return []string{""}, nil
+}
+
+// extractGPSPosition, extract from metadata the keywords GPSPosition
+func (p *Photo) extractGPSPosition(metadata exiftool.FileMetadata) (string, error) {
+
+	// metadata can store the information in multiple format
+	if val, ok := metadata.Fields["GPSPosition"]; ok {
+		return val.(string), nil
+	}
+
+	return "", nil
+}
+
+// extractDateCreation, extract from metadata the keywords dateCreation
+func (p *Photo) extractDateCreation(metadata exiftool.FileMetadata) (time.Time, error) {
+
+	defaultTime := time.Date(1789, time.July, 14, 12, 0, 0, 0, time.UTC)
+	// DateTimeOriginal look like this : 2016:07:24 16:59:32
+	if val, ok := metadata.Fields["DateTimeOriginal"]; ok {
+		// Writing down the way the standard time would look like formatted our way
+		layout := "2006:01:02 15:04:05"
+		t, err := time.Parse(layout, val.(string))
+		if err != nil {
+			return defaultTime, err
+		}
+
+		return t, nil
+	}
+
+	return defaultTime, nil
+}
+
+/*	dateCreation time.Time
+	fileType     string
+	imageSize    string
+*/
 // PrintAllMetaData information this function will be use for the development I will remove it later
 func (p *Photo) PrintAllMetaData() {
 

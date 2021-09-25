@@ -28,7 +28,7 @@ func main() {
 	fmt.Println(" now print info :")
 	photo.PrintAllMetaData()
 
-	fmt.Printf("GPS information : %s ", photo.GetPhotoTag("GPSPosition"))
-	fmt.Printf("GPS information : %s ", photo.GetPhotoTag("Keywords"))
+	//	fmt.Printf("GPS information : %s ", photo.GetPhotoTag("GPSPosition"))
+	//	fmt.Printf("GPS information : %s ", photo.GetPhotoTag("Keywords"))
 
 }
