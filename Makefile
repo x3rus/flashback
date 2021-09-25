@@ -1,7 +1,7 @@
 
 
 build: 
-	go build src/*.go
+	go build -o flashback src/*.go 
 
 test:
 	go test -v src/*.go
