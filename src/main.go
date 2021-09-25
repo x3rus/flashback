@@ -25,10 +25,18 @@ func main() {
 		os.Exit(1)
 	}
 
-	fmt.Println(" now print info :")
+	fmt.Println("Extract All metadata:")
 	photo.PrintAllMetaData()
 
-	//	fmt.Printf("GPS information : %s ", photo.GetPhotoTag("GPSPosition"))
-	//	fmt.Printf("GPS information : %s ", photo.GetPhotoTag("Keywords"))
+	err = photo.SetPhotoStruct()
+	if err != nil {
+		fmt.Println("An error append with the data extraction")
+		fmt.Println(err)
+
+	}
+	fmt.Printf("===================\n\n")
+	fmt.Printf("GPS information : %s \n", photo.gps)
+	fmt.Printf("Label associated : %s \n", photo.labels)
+	fmt.Printf("Date when the picture was taken: %s \n", photo.dateCreation)
 
 }
