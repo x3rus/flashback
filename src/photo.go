@@ -16,6 +16,7 @@ type Photo struct {
 	dateCreation time.Time
 	fileType     string
 	imageSize    string
+	device       string
 	metadata     exiftool.FileMetadata // Raw data extracted from the file
 }
 
@@ -62,6 +63,9 @@ func (p *Photo) SetPhotoStruct() error {
 	p.labels, err = p.extractPhotoLabel(p.metadata)
 	p.gps, err = p.extractGPSPosition(p.metadata)
 	p.dateCreation, err = p.extractDateCreation(p.metadata)
+	p.fileType, err = p.extractFileType(p.metadata)
+	p.imageSize, err = p.extractImageSize(p.metadata)
+	p.device, err = p.extractDeviceUsed(p.metadata)
 	return err
 }
 
@@ -118,10 +122,42 @@ func (p *Photo) extractDateCreation(metadata exiftool.FileMetadata) (time.Time, 
 	return defaultTime, nil
 }
 
-/*	dateCreation time.Time
-	fileType     string
-	imageSize    string
-*/
+// extracFileType, extract from metadata the keywords FileType
+func (p *Photo) extractFileType(metadata exiftool.FileMetadata) (string, error) {
+
+	// metadata can store the information in multiple format
+	if val, ok := metadata.Fields["FileType"]; ok {
+		return val.(string), nil
+	}
+
+	return "", nil
+}
+
+// extracImageSize, extract from metadata the keywords ImageSize
+func (p *Photo) extractImageSize(metadata exiftool.FileMetadata) (string, error) {
+
+	// metadata can store the information in multiple format
+	if val, ok := metadata.Fields["ImageSize"]; ok {
+		return val.(string), nil
+	}
+
+	return "", nil
+}
+
+// extracDeviceUsed, extract from metadata the keywords DeviceType + Make
+func (p *Photo) extractDeviceUsed(metadata exiftool.FileMetadata) (string, error) {
+
+	var deviceUsed string
+	if val, ok := metadata.Fields["DeviceType"]; ok {
+		deviceUsed = val.(string)
+	}
+
+	if val, ok := metadata.Fields["Make"]; ok {
+		deviceUsed = deviceUsed + ": " + val.(string)
+	}
+	return deviceUsed, nil
+}
+
 // PrintAllMetaData information this function will be use for the development I will remove it later
 func (p *Photo) PrintAllMetaData() {
 

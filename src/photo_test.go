@@ -56,16 +56,25 @@ func TestTagsExtracted(t *testing.T) {
 		labelsExpected      []string
 		GPSPositionExpected string
 		dateCreation        time.Time
+		fileType            string
+		device              string
+		imageSize           string
 	}{
 		{"../data/pic-sample/20131207_143248.jpg",
 			[]string{"Alice"},
 			"",
 			time.Date(2013, time.December, 07, 14, 32, 47, 0, time.UTC),
+			"JPEG",
+			"Cell Phone: SAMSUNG",
+			"4128x2322",
 		},
 		{"../data/pic-sample/20160726_103655.jpg",
 			[]string{"Alice", "Chalet", "vacance-2016", "vacances"},
 			"46 deg 5' 35.00\" N, 74 deg 48' 21.00\" W",
 			time.Date(2016, time.July, 26, 10, 36, 55, 0, time.UTC),
+			"JPEG",
+			"Cell Phone: samsung",
+			"5312x2988",
 		},
 	}
 	// Loop in the list of photo
@@ -95,6 +104,21 @@ func TestTagsExtracted(t *testing.T) {
 		// Validate DateCreation
 		if !tt.dateCreation.Equal(photo.dateCreation) {
 			t.Errorf("For file ; %s => Err extracting date Creation: got |%s| want |%s|", tt.filePath, photo.dateCreation, tt.dateCreation)
+		}
+
+		// Validate FileType
+		if tt.fileType != photo.fileType {
+			t.Errorf("For file ; %s => Err extracting File Type : got |%s| want |%s|", tt.filePath, photo.fileType, tt.fileType)
+		}
+
+		// Validate ImageSize
+		if tt.imageSize != photo.imageSize {
+			t.Errorf("For file ; %s => Err extracting Image size: got |%s| want |%s|", tt.filePath, photo.imageSize, tt.imageSize)
+		}
+
+		// Validate DateCreation
+		if tt.device != photo.device {
+			t.Errorf("For file ; %s => Err extracting Device: got |%s| want |%s|", tt.filePath, photo.device, tt.device)
 		}
 	}
 }
