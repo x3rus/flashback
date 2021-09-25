@@ -21,6 +21,10 @@ Global information about the data flow :
 
 ![](./docs/architecture.png)
 
+## Dev environnement
+
+To be able to run the application you need to have `exiftool` install and the binary must be set in your PATH
+
 ## Requirement
 
 * Unittest
