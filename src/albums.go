@@ -10,16 +10,25 @@ import (
 // TODO : next feature
 // *  Add possibility to reload a directory or add new directory at the runtime
 
+// MonthPics , slice to store pic together for the same month
+type MonthPics map[int][]*Photo
+
+// YearPics , slice to store pic together for the same year and month
+type YearPics map[int]MonthPics
+
 // Albums Type  contain photos
 type Albums struct {
-	lstPhotos      []*Photo
+	lstPhotos      YearPics
 	directoryPaths []string
+	numPic         int
 }
 
 // NewAlbum , return Albums struct
 func NewAlbum(directoryPaths []string) *Albums {
 	return &Albums{
 		directoryPaths: directoryPaths,
+		lstPhotos:      make(YearPics),
+		numPic:         0,
 	}
 }
 
@@ -52,7 +61,7 @@ func (a *Albums) LoadPhotosInAlbums() (int, error) {
 			fmt.Printf("Error processing file : %v", err)
 		}
 	}
-	return len(a.lstPhotos), nil
+	return a.numPic, nil
 }
 
 //chargePicInAlbum , create a photo struct and load picture.
@@ -70,9 +79,25 @@ func (a *Albums) chargePicInAlbum(filename string) error {
 		return err
 	}
 
-	// everythings looks good, let's include this picture in the album
-	a.lstPhotos = append(a.lstPhotos, photo)
+	a.addPhoto(photo)
 	return nil
+}
+
+//addPhoto , add the picture in the global album
+// TODO : check how I can add error management
+func (a *Albums) addPhoto(photo *Photo) {
+	// extract date information
+	year, month, _ := photo.dateCreation.Date()
+
+	// check if year was already created
+	if _, ok := a.lstPhotos[year]; !ok {
+		a.lstPhotos[year] = make(MonthPics)
+	}
+	// everythings looks good, let's include this picture in the album
+	a.lstPhotos[year][int(month)] = append(a.lstPhotos[year][int(month)], photo)
+
+	a.numPic++
+
 }
 
 //PrintAlbumInfo , Print picture information
@@ -82,8 +107,13 @@ func (a *Albums) PrintAlbumInfo() error {
 		return fmt.Errorf("No directory path provided")
 	}
 
-	for _, photo := range a.lstPhotos {
-		photo.PrintMainInfo()
+	for k, _ := range a.lstPhotos {
+		fmt.Printf(" We process year : %d \n", k)
+		for m := range a.lstPhotos[k] {
+			for _, photo := range a.lstPhotos[k][m] {
+				photo.PrintMainInfo()
+			}
+		}
 	}
 	return nil
 }
