@@ -5,16 +5,17 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
+	"time"
 )
 
 // TODO : next feature
 // *  Add possibility to reload a directory or add new directory at the runtime
 
-// MonthPics , slice to store pic together for the same month
-type MonthPics map[int][]*Photo
+// WeeklyPics , slice to store pic together for the same month
+type WeeklyPics map[int][]*Photo
 
 // YearPics , slice to store pic together for the same year and month
-type YearPics map[int]MonthPics
+type YearPics map[int]WeeklyPics
 
 // Albums Type  contain photos
 type Albums struct {
@@ -87,14 +88,14 @@ func (a *Albums) chargePicInAlbum(filename string) error {
 // TODO : check how I can add error management
 func (a *Albums) addPhoto(photo *Photo) {
 	// extract date information
-	year, month, _ := photo.dateCreation.Date()
+	year, week := photo.dateCreation.ISOWeek()
 
 	// check if year was already created
 	if _, ok := a.lstPhotos[year]; !ok {
-		a.lstPhotos[year] = make(MonthPics)
+		a.lstPhotos[year] = make(WeeklyPics)
 	}
 	// everythings looks good, let's include this picture in the album
-	a.lstPhotos[year][int(month)] = append(a.lstPhotos[year][int(month)], photo)
+	a.lstPhotos[year][int(week)] = append(a.lstPhotos[year][int(week)], photo)
 
 	a.numPic++
 
@@ -107,6 +108,7 @@ func (a *Albums) PrintAlbumInfo() error {
 		return fmt.Errorf("No directory path provided")
 	}
 
+	// Go throw the album and print information for each pictures
 	for k, _ := range a.lstPhotos {
 		fmt.Printf(" We process year : %d \n", k)
 		for m := range a.lstPhotos[k] {
@@ -116,4 +118,29 @@ func (a *Albums) PrintAlbumInfo() error {
 		}
 	}
 	return nil
+}
+
+// GetLstPhotosForWeek , Query the albums to retreive photo taken during the week of dataSelected
+func (a *Albums) GetLstPhotosForWeek(dateSelected time.Time) ([]*Photo, error) {
+	// retrieve information from the data provided
+	_, week := dateSelected.ISOWeek()
+
+	// variable to hold all picture
+	var photoOfTheWeeks []*Photo
+
+	// Go throw the album and print information for each pictures
+	for k := range a.lstPhotos {
+		for w := range a.lstPhotos[k] {
+			if w == week {
+				photoOfTheWeeks = append(photoOfTheWeeks, a.lstPhotos[k][w]...)
+			}
+		}
+	}
+
+	if len(photoOfTheWeeks) < 1 {
+		// Not sure for the error it's not really an issue. TODO review the error
+		return nil, fmt.Errorf("No pictures found for this year and week")
+	}
+
+	return photoOfTheWeeks, nil
 }
