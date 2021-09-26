@@ -20,6 +20,14 @@ pipeline {
                     }
                 }
             }
+            stage('Lint') {
+                steps {
+                    script {
+                     sh 'make lint'   
+                    }
+                }
+            }
+
 
         } // END stages
 
