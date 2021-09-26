@@ -12,12 +12,16 @@ func TestLoadPhotoInAlbum(t *testing.T) {
 		withError            bool
 	}{
 		{[]string{"../data/pic-sample/dir1/", "../data/unknow"},
-			10,
+			6,
 			true,
 		},
 		{[]string{"../data/pic-sample/dir1/", "../data/pic-sample/dir2/"},
-			20,
+			12,
 			false,
+		},
+		{[]string{},
+			0,
+			true,
 		},
 	}
 	// Loop in the list of photo
@@ -26,9 +30,8 @@ func TestLoadPhotoInAlbum(t *testing.T) {
 		numPicLoaded, err := album.LoadPhotosInAlbums()
 
 		// ICI
-		if (err != nil) == tt.withError {
+		if err != nil && !tt.withError {
 			t.Errorf("Error not expected, when loading picture in the Albums %s; got error : %v", tt.albumPath, err)
-			continue
 		}
 
 		if numPicLoaded != tt.expectedImagesLoaded {
