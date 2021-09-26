@@ -8,3 +8,6 @@ test:
 
 lint:
 	go vet  src/*.go
+
+localdev: build
+	ALBUMDIRS="data/pic-sample/" ./flashback
