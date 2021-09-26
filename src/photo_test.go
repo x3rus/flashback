@@ -13,7 +13,7 @@ func TestTagsExtractionRaw(t *testing.T) {
 		filePath          string
 		expectedTagsValue map[string]string
 	}{
-		{"../data/pic-sample/20131207_143248.jpg",
+		{"../data/pic-sample/dir1/20131207_143248.jpg",
 			map[string]string{
 				"Keywords":    "Alice",
 				"GPSPosition": "",
@@ -60,7 +60,7 @@ func TestTagsExtracted(t *testing.T) {
 		device              string
 		imageSize           string
 	}{
-		{"../data/pic-sample/20131207_143248.jpg",
+		{"../data/pic-sample/dir1/20131207_143248.jpg",
 			[]string{"Alice"},
 			"",
 			time.Date(2013, time.December, 07, 14, 32, 47, 0, time.UTC),

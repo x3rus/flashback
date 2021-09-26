@@ -169,3 +169,19 @@ func (p *Photo) PrintAllMetaData() {
 	}
 
 }
+
+// PrintMainInfo , Print most important information about the picture
+func (p *Photo) PrintMainInfo() {
+
+	if p.metadata.Err != nil {
+		fmt.Printf("Error concerning %v: %v\n", p.metadata.File, p.metadata.Err)
+	}
+
+	fmt.Printf(" File name : %s \n", p.photoPath)
+	fmt.Printf(" 			date : %s \n", p.dateCreation)
+	fmt.Printf(" 			labels : %s \n", p.labels)
+	fmt.Printf(" 			location : %s \n", p.gps)
+	fmt.Printf(" 			device used : %s \n", p.device)
+	fmt.Printf(" 			image size: %s \n", p.imageSize)
+
+}
