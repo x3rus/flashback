@@ -7,6 +7,9 @@ import (
 	"regexp"
 )
 
+// TODO : next feature
+// *  Add possibility to reload a directory or add new directory at the runtime
+
 // Albums Type  contain photos
 type Albums struct {
 	lstPhotos      []*Photo
@@ -52,6 +55,7 @@ func (a *Albums) LoadPhotosInAlbums() (int, error) {
 	return len(a.lstPhotos), nil
 }
 
+//chargePicInAlbum , create a photo struct and load picture.
 func (a *Albums) chargePicInAlbum(filename string) error {
 	// init new photo
 	photo := NewPhoto(filename)
@@ -60,6 +64,26 @@ func (a *Albums) chargePicInAlbum(filename string) error {
 		return err
 	}
 
+	// convert raw data to the struct
+	err = photo.SetPhotoStruct()
+	if err != nil {
+		return err
+	}
+
+	// everythings looks good, let's include this picture in the album
 	a.lstPhotos = append(a.lstPhotos, photo)
+	return nil
+}
+
+//PrintAlbumInfo , Print picture information
+func (a *Albums) PrintAlbumInfo() error {
+	// stop if no directory was provided
+	if len(a.directoryPaths) < 1 {
+		return fmt.Errorf("No directory path provided")
+	}
+
+	for _, photo := range a.lstPhotos {
+		photo.PrintMainInfo()
+	}
 	return nil
 }
