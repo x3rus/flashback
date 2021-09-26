@@ -1,13 +1,9 @@
 package main
 
 import (
-	"fmt"
-	"net/http"
 	"os"
-	"strconv"
 	"strings"
 
-	"github.com/sirupsen/logrus"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -21,12 +17,6 @@ func getenv(key, defaultValue string) string {
 		return defaultValue
 	}
 	return value
-}
-
-// Page struct for the web server
-type Page struct {
-	Title string
-	Body  []byte
 }
 
 func main() {
@@ -44,37 +34,11 @@ func main() {
 	}
 
 	album = NewAlbum(albumDirs)
-	go loadAlbums(logrus)
+	flashbackWebUI := NewAlbumWebUI(album, logrus)
 
-	http.HandleFunc("/", viewHandler)
-	log.Fatal(http.ListenAndServe(":8080", nil))
-}
+	// Load picture in a go routine
+	go flashbackWebUI.LoadAlbums(logrus)
 
-func loadPage(url string) (*Page, error) {
-
-	if url == "/" {
-		body := "Welcom to the flashback album  <br>"
-		body = body + " We have " + strconv.Itoa(album.numPic) + " pictures in the album"
-		return &Page{Title: url, Body: []byte(body)}, nil
-	}
-
-	return &Page{Title: url, Body: []byte("Not expected for now")}, nil
-}
-
-func viewHandler(w http.ResponseWriter, r *http.Request) {
-	title := r.URL.Path
-	p, _ := loadPage(title)
-	fmt.Fprintf(w, "<h1>%s</h1><div>%s</div>", p.Title, p.Body)
-}
-
-func loadAlbums(logger *logrus.Entry) {
-	logger.Debug("Load All pics:")
-	numLoadedPic, err := album.LoadPhotosInAlbums()
-	logger.Infof("We have loaded : %d , in directory : %s", numLoadedPic, album.directoryPaths)
-
-	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
-	}
+	flashbackWebUI.RunWebSrv()
 
 }
