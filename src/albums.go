@@ -108,6 +108,7 @@ func (a *Albums) PrintAlbumInfo() error {
 		return fmt.Errorf("No directory path provided")
 	}
 
+	// Go throw the album and print information for each pictures
 	for k, _ := range a.lstPhotos {
 		fmt.Printf(" We process year : %d \n", k)
 		for m := range a.lstPhotos[k] {
@@ -122,7 +123,24 @@ func (a *Albums) PrintAlbumInfo() error {
 // GetLstPhotosForWeek , Query the albums to retreive photo taken during the week of dataSelected
 func (a *Albums) GetLstPhotosForWeek(dateSelected time.Time) ([]*Photo, error) {
 	// retrieve information from the data provided
+	_, week := dateSelected.ISOWeek()
 
-	// querie Albums to get monthly
-	return nil, nil
+	// variable to hold all picture
+	var photoOfTheWeeks []*Photo
+
+	// Go throw the album and print information for each pictures
+	for k := range a.lstPhotos {
+		for w := range a.lstPhotos[k] {
+			if w == week {
+				photoOfTheWeeks = append(photoOfTheWeeks, a.lstPhotos[k][w]...)
+			}
+		}
+	}
+
+	if len(photoOfTheWeeks) < 1 {
+		// Not sure for the error it's not really an issue. TODO review the error
+		return nil, fmt.Errorf("No pictures found for this year and week")
+	}
+
+	return photoOfTheWeeks, nil
 }
