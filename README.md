@@ -11,11 +11,11 @@ Flashback is/will be a web application wrote in GoLang and containerized.
 
 In the first iteration :
 
-    * pictures are accessible through the file system (keep in mind: find a mechanism to be able to process external sources)
-    * The album information will be store in memory (keep in mind: in the future, the storage could be externalised)
-    * Use google auth for authentication, this can be performed in the SSL front end if we use Nginx or Apache (Pictures *must* not be freely available on the net)
-    * Chat system will be RocketChat (In the future we will have to support more systems)
-    * Provide a web interface to visualize pictures of the day, with this method it will be easy to only send the URL link to the chat system.
+* pictures are accessible through the file system (keep in mind: find a mechanism to be able to process external sources)
+* The album information will be store in memory (keep in mind: in the future, the storage could be externalised)
+* Use google auth for authentication, this can be performed in the SSL front end if we use Nginx or Apache (Pictures *must* not be freely available on the net)
+* Chat system will be RocketChat (In the future we will have to support more systems)
+* Provide a web interface to visualize pictures of the day, with this method it will be easy to only send the URL link to the chat system.
 
 For the first version, I do not expect support multi-user
 
