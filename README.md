@@ -46,6 +46,8 @@ To be able to run the application you need to have `exiftool` install and the bi
 
 This project started as a weekend project, I wanted to practice GoLang and I wanted this application. I know amazon and google photo do that but do I want to give my pictures to them ?? Nooo. Like most of you, I take pictures but don't take the time to watch them again, because there are too many files :). As always, I expected to do more, but I'm happy with this start. 
 
+You can view the development process I keep all Pull Requests, and I did not squash my commit. 
+
 I tested few libraries to extract exit
 
 * https://github.com/evanoberholster/imagemeta
