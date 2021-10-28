@@ -1,0 +1,11 @@
+kind: Pod
+apiVersion: v1
+metadata:
+  name: flashback
+  annotations:
+    app/name: "flashback" 
+spec:
+  containers:
+  - name: flashback-app
+    image: x3rus/flashback:0.1
+  restartPolicy: Never

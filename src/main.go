@@ -25,7 +25,7 @@ func main() {
 	logrus := log.NewEntry(log.New())
 
 	// retrieve variable environnement and define default value if not present
-	envAlbumDirs := getenv("ALBUMDIRS", "./data/pic-sample/dir1,./data/pic-sample/dir1")
+	envAlbumDirs := getenv("ALBUMDIRS", "./data/pic-sample/dir1,./data/pic-sample/dir2")
 	albumDirs := strings.Split(envAlbumDirs, ",")
 
 	if len(albumDirs) < 1 {
