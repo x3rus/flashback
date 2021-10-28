@@ -1,0 +1,60 @@
+67753  microk8s kubectl get node
+67754  ls
+67755  alias k='microk8s kubectl'
+67756  k get nodes
+67757  k get pods
+67758  k delete pod test-owncloud-nextcloud-596c565bcc-strqn
+67759  k get pods
+67760  microk8s helm3 list
+67761  microk8s helm3 stop test-owncloud
+67762  microk8s helm3 --help
+67763  microk8s helm3 uninstall test-owncloud
+67764  ls
+67765  k get pods
+67766  k apply -f pod.yaml 
+67767  k get pods
+67768  k describe pod flashback
+67769  k get pods
+67770  ss -lntp
+67771  k get pods
+67772  k exec -i -t flashback:0.1 bash
+67773  k exec -i -t flashback bash
+67774  k exec -i -t flashback sh
+67775  k get ingress
+67776  k get ingress -a
+67777  k get ingress --all-namespaces
+67778  ls
+67779  mkdir k8s
+67780  mv pod.yaml k8s
+67781  cd k8s
+67782  vim deployement.yaml
+67783  k get pods
+67784  k delete pod flashback
+67785  k get deployment
+67786  k get deployment --all-namespaces
+67787  ls
+67788  k apply -f deployement.yaml 
+67789  k get deployment
+67790  k describe deployment flashback-deployment
+67791  k get pod
+67792  k exec -i -t flashback-deployment-7577c4fd6c-km62w bash
+67793  k exec -i -t flashback-deployment-7577c4fd6c-km62w sh
+67794  k get rs
+67795  k get pod
+67796  k describe rs flashback-deployment-7577c4fd6c
+67797  k describe rs flashback-deployment-7577c4fd6c -o yaml
+67798  k get rs flashback-deployment-7577c4fd6c -o yaml
+67799  ls
+67800  k get pod --show-labels
+67801  k rolleout status
+67802  k rollout status
+67803  k rollout status flashback
+67804  k rollout status deployment flashback
+67805  k rollout status deployment/flashback
+67806  k get deployment
+67807  k rollout status deployment/flashback-deployment
+67808  k edit deployment flashback-deployment
+67809  history
+67810  history | cat -n 
+67811  bc -l 
+67812  history | tail -60  > k8s-cmd

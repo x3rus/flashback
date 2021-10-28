@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: flashback-deployment
+  labels:
+    app: flashback
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: flashback
+  template:
+    metadata:
+      labels:
+        app: flashback
+    spec:
+      containers:
+      - name: flashback-app
+        image: x3rus/flashback:0.1
+        ports:
+        - containerPort: 8080
