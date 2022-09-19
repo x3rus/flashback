@@ -83,3 +83,46 @@ func TestGetLstPhotosForWeek(t *testing.T) {
 
 	}
 }
+
+// Validate when we query the album for a year you have your photos
+func TestGetLstPhotosForYear(t *testing.T) {
+	AlbumsTests := []struct {
+		albumPath              []string
+		expectedImagesReturned int
+		yearToUse              int
+	}{
+		{[]string{"../data/pic-sample/dir2/", "../data/unknow"},
+			1,
+			2015,
+		},
+		{[]string{"../data/pic-sample/dir1/", "../data/pic-sample/dir2/"},
+			7,
+			2014,
+		},
+		{[]string{},
+			0,
+			2020,
+		},
+	}
+	// Loop in the list of photo
+	for _, tt := range AlbumsTests {
+		album := NewAlbum(tt.albumPath)
+		_, err := album.LoadPhotosInAlbums()
+
+		// for now I do not care the error validation performed in the previous test
+		if err != nil {
+			continue
+		}
+
+		photoForTheYear, _ := album.GetLstPhotosForYear(tt.yearToUse)
+
+		// for _, p := range photoForTheYear {
+		//  	p.PrintMainInfo()
+		//}
+
+		if len(photoForTheYear) != tt.expectedImagesReturned {
+			t.Errorf("Photo retreive for the date %d do not match number expected ; got %d | expected : %d", tt.yearToUse, len(photoForTheYear), tt.expectedImagesReturned)
+		}
+
+	}
+}
