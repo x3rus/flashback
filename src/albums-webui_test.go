@@ -42,7 +42,8 @@ func TestUrlParse(t *testing.T) {
 	for _, tt := range URL2Tests {
 
 		flashbackWebUI := NewAlbumWebUI(nil, nil)
-		webPageType, err := flashbackWebUI.parseURL(tt.URL)
+		// TODO improvement add validation on the map[string]string
+		webPageType, _, err := flashbackWebUI.parseURL(tt.URL)
 
 		// ICI
 		if err != nil && !tt.withError {
