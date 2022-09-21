@@ -7,6 +7,7 @@ import (
 	"os"
 	"regexp"
 	"strconv"
+	"time"
 
 	"github.com/sirupsen/logrus"
 )
@@ -58,9 +59,50 @@ func (a *AlbumWebUI) loadPage(url string) (*Page, error) {
 		}
 		body, _ := a.showPhotosYear(yearInt)
 		return &Page{Title: url, Body: body}, nil
+	} else if pageType == "listmonth" {
+		//		yearint, err := strconv.atoi(fields["year"])
+		//		monthint, err := strconv.atoi(fields["month"])
+		return &Page{Title: url, Body: []byte("list year/month not implemented , pr are welcome :)")}, nil
+	} else if pageType == "listPastYearSameWeekNum" {
+		yearInt, err := strconv.Atoi(fields["Year"])
+		if err != nil {
+			return &Page{Title: url, Body: []byte("Error with the year number ")}, nil
+		}
+		monthInt, err := strconv.Atoi(fields["Month"])
+		if err != nil {
+			return &Page{Title: url, Body: []byte("Error with the Month number ")}, nil
+		}
+
+		dayInt, err := strconv.Atoi(fields["Day"])
+		if err != nil {
+			return &Page{Title: url, Body: []byte("Error with the day number ")}, nil
+		}
+
+		dayRequested := time.Date(yearInt, time.Month(monthInt), dayInt, 1, 50, 59, 0, time.UTC)
+		body, _ := a.showWeekPhotos(dayRequested)
+		if err != nil {
+			return &Page{Title: url, Body: []byte("error retrieving photos")}, nil
+		}
+
+		return &Page{Title: url, Body: body}, nil
 	}
 
 	return &Page{Title: url, Body: []byte("Not expected for now")}, nil
+}
+
+func (a *AlbumWebUI) showWeekPhotos(dateSelected time.Time) ([]byte, error) {
+	photos, _ := a.album.GetLstPhotosForWeek(dateSelected)
+
+	body := "List picture of all year for the week : "
+	for _, photo := range photos {
+		var buf bytes.Buffer
+		photo.PrintMainInfo(&buf)
+
+		body = body + buf.String() + "<br>"
+	}
+
+	return []byte(body), nil
+
 }
 
 func (a *AlbumWebUI) showPhotosYear(year int) ([]byte, error) {
@@ -102,9 +144,9 @@ func (a *AlbumWebUI) parseURL(url string) (string, map[string]string, error) {
 	if regroup["Day"] != "" {
 		day, err := strconv.Atoi(regroup["Day"])
 		if day > 31 || err != nil {
-			return "listDay", regroup, fmt.Errorf("URL provided a Day bigger than 31, URL : %s", url)
+			return "listPastYearSameWeekNum", regroup, fmt.Errorf("URL provided a Day bigger than 31, URL : %s", url)
 		}
-		return "listDay", regroup, nil
+		return "listPastYearSameWeekNum", regroup, nil
 	} else if regroup["Month"] != "" {
 		month, err := strconv.Atoi(regroup["Month"])
 		if month > 12 || err != nil {
