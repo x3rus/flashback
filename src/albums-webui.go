@@ -90,6 +90,9 @@ func (a *AlbumWebUI) loadPage(url string) (*Page, error) {
 	return &Page{Title: url, Body: []byte("Not expected for now")}, nil
 }
 
+// showPhotosYear : return a page with the list of photos for all years with this week number.
+//
+//	return []byte with the page content
 func (a *AlbumWebUI) showWeekPhotos(dateSelected time.Time) ([]byte, error) {
 	photos, _ := a.album.GetLstPhotosForWeek(dateSelected)
 
@@ -105,11 +108,14 @@ func (a *AlbumWebUI) showWeekPhotos(dateSelected time.Time) ([]byte, error) {
 
 }
 
+// showPhotosYear : return a page with the list of photos for the year in argument
+//
+//	return []byte with the page content
 func (a *AlbumWebUI) showPhotosYear(year int) ([]byte, error) {
 
 	photos, _ := a.album.GetLstPhotosForYear(year)
 
-	body := "List year picture : "
+	body := "List year picture : <br>"
 	for _, photo := range photos {
 		var buf bytes.Buffer
 		photo.PrintMainInfo(&buf)
