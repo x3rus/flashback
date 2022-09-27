@@ -62,8 +62,9 @@ func (p *Photo) SetPhotoStruct() error {
 	var err error
 	// TODO change to use the multiple error mechanism
 	// TODO add validation if p.metadata is empty
+	// TODO remove arg p.metadata anyway it's the photo struct we manage
 	p.labels, err = p.extractPhotoLabel(p.metadata)
-	p.gps, err = p.extractGPSPosition(p.metadata)
+	p.gps = p.extractGPSPosition()
 	p.dateCreation, err = p.extractDateCreation(p.metadata)
 	p.fileType, err = p.extractFileType(p.metadata)
 	p.imageSize, err = p.extractImageSize(p.metadata)
@@ -95,14 +96,14 @@ func (p *Photo) extractPhotoLabel(metadata exiftool.FileMetadata) ([]string, err
 }
 
 // extractGPSPosition, extract from metadata the keywords GPSPosition
-func (p *Photo) extractGPSPosition(metadata exiftool.FileMetadata) (string, error) {
+func (p *Photo) extractGPSPosition() string {
 
 	// metadata can store the information in multiple format
-	if val, ok := metadata.Fields["GPSPosition"]; ok {
-		return val.(string), nil
+	if val, ok := p.metadata.Fields["GPSPosition"]; ok {
+		return val.(string)
 	}
 
-	return "", nil
+	return ""
 }
 
 // extractDateCreation, extract from metadata the keywords dateCreation

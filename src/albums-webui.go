@@ -22,26 +22,32 @@ type Page struct {
 type AlbumWebUI struct {
 	album         *Albums
 	supportedPage []string
+	appPrefix     string
 	logger        *logrus.Entry
 }
 
 // NewAlbumWebUI , return Albums struct
-func NewAlbumWebUI(album *Albums, logger *logrus.Entry) *AlbumWebUI {
+func NewAlbumWebUI(album *Albums, appPrefix string, logger *logrus.Entry) *AlbumWebUI {
 	return &AlbumWebUI{
 		album:         album,
 		supportedPage: []string{"home", "listYear", "listMonth", "listDay"},
+		appPrefix:     appPrefix,
 		logger:        logger,
 	}
 }
 
 // RunWebSrv , provide the web interface
 func (a *AlbumWebUI) RunWebSrv() {
-	http.HandleFunc("/", a.viewHandler)
+
+	fs := http.FileServer(http.Dir("./data"))
+	http.Handle("/data/", http.StripPrefix("/data/", fs))
+
+	http.HandleFunc(a.appPrefix, a.viewHandler)
 	a.logger.Fatal(http.ListenAndServe(":8080", nil))
 }
 
 // loadPage , show web page for the user
-func (a *AlbumWebUI) loadPage(url string) (*Page, error) {
+func (a *AlbumWebUI) loadPage(url string, w http.ResponseWriter) (*Page, error) {
 
 	pageType, fields, err := a.parseURL(url)
 	if err != nil {
@@ -98,14 +104,22 @@ func (a *AlbumWebUI) showWeekPhotos(dateSelected time.Time) ([]byte, error) {
 
 	body := "List picture of all year for the week : "
 	for _, photo := range photos {
-		var buf bytes.Buffer
-		photo.PrintMainInfo(&buf)
-
-		body = body + buf.String() + "<br>"
+		body = body + string(a.showPhotoWithImg(photo)) + "<br>"
 	}
 
 	return []byte(body), nil
 
+}
+
+func (a *AlbumWebUI) showPhotoWithImg(pic *Photo) []byte {
+
+	// TODO I think I need to use the option B from this site : https://zetcode.com/golang/http-serve-image/
+	body := "<p>File: " + pic.photoPath + "</p> \n"
+	body = body + "<a href=\"/" + pic.photoPath + "\">"
+	body = body + "<img src=/" + pic.photoPath + " alt=\"" + pic.photoPath + "\" style=\"width:700px\">"
+	body = body + "</a> <br> \n"
+	body = body + pic.gps
+	return []byte(body)
 }
 
 // showPhotosYear : return a page with the list of photos for the year in argument
@@ -119,6 +133,10 @@ func (a *AlbumWebUI) showPhotosYear(year int) ([]byte, error) {
 	for _, photo := range photos {
 		var buf bytes.Buffer
 		photo.PrintMainInfo(&buf)
+
+		// <img src="pic_trulli.jpg" alt="Italian Trulli">
+		body = body + "<img src=\"" + photo.photoPath + "\" alt=\"photo\" <br>"
+		photo.PrintAllMetaData()
 
 		body = body + buf.String() + "<br>"
 	}
@@ -136,7 +154,7 @@ func (a *AlbumWebUI) showPhotosYear(year int) ([]byte, error) {
 //			 error
 func (a *AlbumWebUI) parseURL(url string) (string, map[string]string, error) {
 
-	URLRegex := `/(?P<Year>\d{4})?/?(?P<Month>\d{2})?/?(?P<Day>\d{2})?`
+	URLRegex := a.appPrefix + `/?(?P<Year>\d{4})?/?(?P<Month>\d{2})?/?(?P<Day>\d{2})?`
 	r := regexp.MustCompile(URLRegex)
 
 	regroup := FindAllGroups(r, url)
@@ -161,7 +179,7 @@ func (a *AlbumWebUI) parseURL(url string) (string, map[string]string, error) {
 		return "listMonth", regroup, nil
 	} else if regroup["Year"] != "" {
 		return "listYear", regroup, nil
-	} else if url == "/" {
+	} else if url == a.appPrefix || url == a.appPrefix+"/" {
 		return "home", regroup, nil
 	}
 
@@ -170,8 +188,15 @@ func (a *AlbumWebUI) parseURL(url string) (string, map[string]string, error) {
 
 func (a *AlbumWebUI) viewHandler(w http.ResponseWriter, r *http.Request) {
 	title := r.URL.Path
-	p, _ := a.loadPage(title)
-	fmt.Fprintf(w, "<h1>%s</h1><div>%s</div>", p.Title, p.Body)
+	p, _ := a.loadPage(title, w)
+	header := `
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home page</title>
+</head>
+    `
+	fmt.Fprintf(w, header+"<h1>%s</h1><div>%s</div>", p.Title, p.Body)
 }
 
 // LoadAlbums , provide a mecanismes to load pictures in the album
