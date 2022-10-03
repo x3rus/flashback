@@ -34,7 +34,7 @@ func main() {
 	}
 
 	album = NewAlbum(albumDirs)
-	flashbackWebUI := NewAlbumWebUI(album, logrus)
+	flashbackWebUI := NewAlbumWebUI(album, "/flashback/", logrus)
 
 	// Load picture in a go routine
 	go flashbackWebUI.LoadAlbums(logrus)

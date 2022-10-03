@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"io"
 	"reflect"
 	"time"
 
@@ -60,8 +61,10 @@ func (p *Photo) SetPhotoStruct() error {
 
 	var err error
 	// TODO change to use the multiple error mechanism
+	// TODO add validation if p.metadata is empty
+	// TODO remove arg p.metadata anyway it's the photo struct we manage
 	p.labels, err = p.extractPhotoLabel(p.metadata)
-	p.gps, err = p.extractGPSPosition(p.metadata)
+	p.gps = p.extractGPSPosition()
 	p.dateCreation, err = p.extractDateCreation(p.metadata)
 	p.fileType, err = p.extractFileType(p.metadata)
 	p.imageSize, err = p.extractImageSize(p.metadata)
@@ -93,14 +96,14 @@ func (p *Photo) extractPhotoLabel(metadata exiftool.FileMetadata) ([]string, err
 }
 
 // extractGPSPosition, extract from metadata the keywords GPSPosition
-func (p *Photo) extractGPSPosition(metadata exiftool.FileMetadata) (string, error) {
+func (p *Photo) extractGPSPosition() string {
 
 	// metadata can store the information in multiple format
-	if val, ok := metadata.Fields["GPSPosition"]; ok {
-		return val.(string), nil
+	if val, ok := p.metadata.Fields["GPSPosition"]; ok {
+		return val.(string)
 	}
 
-	return "", nil
+	return ""
 }
 
 // extractDateCreation, extract from metadata the keywords dateCreation
@@ -171,17 +174,17 @@ func (p *Photo) PrintAllMetaData() {
 }
 
 // PrintMainInfo , Print most important information about the picture
-func (p *Photo) PrintMainInfo() {
+func (p *Photo) PrintMainInfo(w io.Writer) {
 
 	if p.metadata.Err != nil {
-		fmt.Printf("Error concerning %v: %v\n", p.metadata.File, p.metadata.Err)
+		fmt.Fprintf(w, "Error concerning %v: %v\n", p.metadata.File, p.metadata.Err)
 	}
 
-	fmt.Printf(" File name : %s \n", p.photoPath)
-	fmt.Printf(" 			date : %s \n", p.dateCreation)
-	fmt.Printf(" 			labels : %s \n", p.labels)
-	fmt.Printf(" 			location : %s \n", p.gps)
-	fmt.Printf(" 			device used : %s \n", p.device)
-	fmt.Printf(" 			image size: %s \n", p.imageSize)
+	fmt.Fprintf(w, " File name : %s \n", p.photoPath)
+	fmt.Fprintf(w, " 			date : %s \n", p.dateCreation)
+	fmt.Fprintf(w, " 			labels : %s \n", p.labels)
+	fmt.Fprintf(w, " 			location : %s \n", p.gps)
+	fmt.Fprintf(w, " 			device used : %s \n", p.device)
+	fmt.Fprintf(w, " 			image size: %s \n", p.imageSize)
 
 }
