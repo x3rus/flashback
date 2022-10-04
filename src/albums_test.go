@@ -126,3 +126,12 @@ func TestGetLstPhotosForYear(t *testing.T) {
 
 	}
 }
+
+// inspiration from : https://blog.logrocket.com/benchmarking-golang-improve-function-performance/
+// IMPROVEMENT: load different images
+func BenchmarkChargePicInAlbum(b *testing.B) {
+	album := NewAlbum([]string{"../data/pic-sample/dir1"})
+	for i := 0; i < b.N; i++ {
+		album.chargePicInAlbum("../data/pic-sample/dir1/20140410_150646.jpg")
+	}
+}
