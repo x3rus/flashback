@@ -17,6 +17,9 @@ docker-run: docker-build
 	docker run --rm -e ALBUMDIRS=${MOUNTED_ALBUMS} -v ${LOCAL_ALBUMS}:${MOUNTED_ALBUMS} \
 		-p 8085:8080 ${DOCKER_PREFIX}${APP_NAME}:${APP_VERSION}
 
+bench:
+	go test -bench=. -count=2 ./src/
+
 test:
 	go test -v src/*.go
 
