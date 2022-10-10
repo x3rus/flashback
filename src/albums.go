@@ -35,6 +35,7 @@ func NewAlbum(directoryPaths []string) *Albums {
 }
 
 // LoadPhotosInAlbums , iterate for each directory and load photos
+// Return number of pictures loaded
 func (a *Albums) LoadPhotosInAlbums() (int, error) {
 	// Loop in each directory and load picture files
 	// TODO: need improve regex

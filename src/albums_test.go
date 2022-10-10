@@ -127,6 +127,53 @@ func TestGetLstPhotosForYear(t *testing.T) {
 	}
 }
 
+// Validate Time use to load photos in Album
+func TestTimeLoadPhotosInAlbums(t *testing.T) {
+	AlbumsTests := []struct {
+		albumPath              []string
+		expectedImagesReturned int
+		timeUsedSec            float64
+	}{
+		{[]string{"../data/pic-sample/dir2/", "../data/unknow"},
+			6,
+			2.0,
+		},
+		{[]string{"../data/pic-sample/dir1/", "../data/pic-sample/dir2/"},
+			12,
+			3.0,
+		},
+		// So if I can load multiple time the same directory I can simulate 100 dirs ...
+		{[]string{"../data/pic-sample/dir1/", "../data/pic-sample/dir2/", "../data/pic-sample/dir2/", "../data/pic-sample/dir2/"},
+			24,
+			5.0,
+		},
+	}
+	// Loop in the list of photo
+	for _, tt := range AlbumsTests {
+		album := NewAlbum(tt.albumPath)
+
+		start := time.Now()
+		numPicsLoaded, err := album.LoadPhotosInAlbums()
+
+		elapsed := time.Since(start)
+
+		if time.Duration(elapsed.Seconds()) > time.Duration(tt.timeUsedSec) {
+			t.Errorf("Time use to load pics exceed the number expected ; got %f | expected : %f", elapsed.Seconds(), tt.timeUsedSec)
+		}
+
+		// for now I do not care the error validation performed in the previous test
+		if err != nil {
+			continue
+		}
+
+		if numPicsLoaded != tt.expectedImagesReturned {
+			t.Errorf("Number of pics retreived do not match number expected ; got %d | expected : %d", numPicsLoaded, tt.expectedImagesReturned)
+		}
+
+	}
+
+}
+
 // inspiration from : https://blog.logrocket.com/benchmarking-golang-improve-function-performance/
 // IMPROVEMENT: load different images
 func BenchmarkChargePicInAlbum(b *testing.B) {
