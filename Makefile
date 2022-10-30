@@ -19,12 +19,16 @@ docker-run: docker-build
 
 bench:
 	go test -bench=. -count=2 ./src/
+	go test -v -tags=benchmark ./src/
 
 test:
-	go test -v src/*.go
+	go test -v -tags=default ./src/
+
+alltest:
+	go test -v -tags=all ./src/
 
 lint:
-	go vet  src/*.go
+	go vet  ./src/
 
 localdev: build
 	ALBUMDIRS="data/pic-sample/" ./flashback
