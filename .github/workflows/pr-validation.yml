@@ -25,11 +25,8 @@ jobs:
       # You can test your matrix by printing the current Go version
       - name: Lint validation
         run: make lint
-        with:
-          go-version: ${{ matrix.go-version }}
       
       - name: Run unittest
         run: make test        
-        with:
-          go-version: ${{ matrix.go-version }}
+
         
