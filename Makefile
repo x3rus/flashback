@@ -27,9 +27,12 @@ test:
 alltest:
 	go test -v -tags=all ./src/
 
-lint:
+setup-linter:
+    curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.55.2
+
+lint: setup-linter
 	go vet  ./src/
-	golangci-lint run ./src/
+	$(go env GOPATH)/bin/golangci-lint run ./src/
 
 localdev: build
 	ALBUMDIRS="data/pic-sample/" ./flashback
