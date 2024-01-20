@@ -23,9 +23,9 @@ jobs:
 
       - name: Download dependency
         run: |
-        go get -v ...
-        apt-get update
-        apt-get install -y libexif-dev
+          go get -v ...
+          apt-get update
+          apt-get install -y libexif-dev
 
       # You can test your matrix by printing the current Go version
       - name: Lint validation
