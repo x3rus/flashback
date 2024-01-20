@@ -1,3 +1,4 @@
+.PHONY : build docker-build docker-run bench test alltest golangci-lint lint localdev
 
 DOCKER_PREFIX=x3rus/
 APP_NAME=flashback
@@ -27,12 +28,12 @@ test:
 alltest:
 	go test -v -tags=all ./src/
 
-setup-linter:
-    curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.55.2
+golangci-lint:
+    $(shell curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(shell go env GOPATH)/bin v1.55.2 )
 
-lint: setup-linter
+lint: golangci-lint
 	go vet  ./src/
-	$(go env GOPATH)/bin/golangci-lint run ./src/
+	$(shell go env GOPATH)/bin/golangci-lint run ./src/
 
 localdev: build
 	ALBUMDIRS="data/pic-sample/" ./flashback
