@@ -25,11 +25,9 @@ jobs:
         run: go get -v ...
       # You can test your matrix by printing the current Go version
       - name: Lint validation
-        needs: [Download dependancy]
         run: make lint
       
       - name: Run unittest
-        needs: [Download dependancy]
         run: make test        
 
         
