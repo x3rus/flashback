@@ -25,7 +25,7 @@ jobs:
         run: |
           go get -v ...
           sudo apt-get update
-          sudo apt-get install -y libexif-dev
+          sudo apt-get install -y libexif-dev exiftool
 
       # You can test your matrix by printing the current Go version
       - name: Lint validation
