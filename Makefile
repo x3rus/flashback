@@ -29,6 +29,7 @@ alltest:
 
 lint:
 	go vet  ./src/
+	golangci-lint run ./src/
 
 localdev: build
 	ALBUMDIRS="data/pic-sample/" ./flashback
