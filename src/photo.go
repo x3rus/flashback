@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"io"
 	"reflect"
@@ -59,17 +60,35 @@ func (p *Photo) LoadPhotoTags() error {
 // SetPhotoStruct , get information from the raw data and set fields in the struct
 func (p *Photo) SetPhotoStruct() error {
 
+	var errGlobal error
 	var err error
 	// TODO change to use the multiple error mechanism
 	// TODO add validation if p.metadata is empty
 	// TODO remove arg p.metadata anyway it's the photo struct we manage
 	p.labels, err = p.extractPhotoLabel(p.metadata)
+	if errors.Join(errGlobal, err) != nil {
+		return errGlobal
+	}
 	p.gps = p.extractGPSPosition()
 	p.dateCreation, err = p.extractDateCreation(p.metadata)
+	if errors.Join(errGlobal, err) != nil {
+		return errGlobal
+	}
 	p.fileType, err = p.extractFileType(p.metadata)
+	if errors.Join(errGlobal, err) != nil {
+		return errGlobal
+	}
+
 	p.imageSize, err = p.extractImageSize(p.metadata)
+	if errors.Join(errGlobal, err) != nil {
+		return errGlobal
+	}
 	p.device, err = p.extractDeviceUsed(p.metadata)
-	return err
+	if errors.Join(errGlobal, err) != nil {
+		return errGlobal
+	}
+
+	return errGlobal
 }
 
 // extractPhotoLabel , extract from metadata the keywords label , tags set by the user
