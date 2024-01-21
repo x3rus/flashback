@@ -31,7 +31,7 @@ alltest:
 golangci-lint:
 	$(shell curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(shell go env GOPATH)/bin v1.55.2 )
 
-lint: # golangci-lint
+lint:  golangci-lint
 	go vet  ./src/
 	$(shell go env GOPATH)/bin/golangci-lint run ./src/
 
