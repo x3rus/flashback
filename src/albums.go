@@ -39,7 +39,7 @@ func NewAlbum(directoryPaths []string) *Albums {
 func (a *Albums) LoadPhotosInAlbums() (int, error) {
 	// Loop in each directory and load picture files
 	// TODO: need improve regex
-	libRegEx, err := regexp.Compile("^.+\\.(jpg)$")
+	libRegEx, err := regexp.Compile(`.+\.(jpg)$`)
 	if err != nil {
 		return 0, err
 	}
@@ -111,7 +111,7 @@ func (a *Albums) PrintAlbumInfo(w io.Writer) error {
 	}
 
 	// Go throw the album and print information for each pictures
-	for k, _ := range a.lstPhotos {
+	for k := range a.lstPhotos {
 		fmt.Printf(" We process year : %d \n", k)
 		for m := range a.lstPhotos[k] {
 			for _, photo := range a.lstPhotos[k][m] {
